@@ -19,13 +19,16 @@ def hello():
     return render_template('index.html', contents=contents)
 
 # /<title> へアクセスしたときの動作
+# <title>は変数としてindex.htmlのtitle=content.titleとして渡される
 @app.route('/<title>', methods=['GET'])
 def show_content(title):
-    # Base.query.all(): フィルタリング
+    # Base.query.all()でリスト形式で取得
+    # first()は一行だけ(ここではtitle=titleでフィルタをかけてる)
     content = WikiContent.query.filter_by(title=title).first()
     if content is None:
         # title のデータが存在しないとき404エラー
         abort(404)
+    # show_content.htmlに引数contentにcontentを渡す
     return render_template('show_content.html', content=content)
 
 # 新規追加・更新
@@ -46,7 +49,8 @@ def post_content(title=None):
     # db更新
     db_session.add(content)
     db_session.commit()
-    return content.body
+    return content.html
 
 if __name__ == '__main__':
+    # サーバー起動
     app.run()
